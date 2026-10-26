@@ -1,0 +1,6 @@
+   data/raw/*.csv
+   data/raw/*.zip
+   data/flights.db
+   __pycache__/
+   *.pyc
+   .ipynb_checkpoints/
