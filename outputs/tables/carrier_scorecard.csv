@@ -1,0 +1,14 @@
+carrier_name,scheduled_flights,on_time_pct,cancelled_pct,diverted_pct,severe_delays_per_10k_operated,mean_arr_delay_min
+Alaska Airlines,196221,79.51,1.08,0.26,67.2,2.5
+Delta Air Lines,603745,78.95,2.14,0.3,133.1,4.3
+Envoy Air,188524,78.83,2.48,0.28,131.4,3.9
+United Airlines,485226,77.96,1.26,0.35,171.9,6.3
+SkyWest Airlines,501486,76.31,1.95,0.34,235.0,10.6
+Republic Airways,214991,75.11,5.13,0.28,143.8,4.3
+Southwest Airlines,811470,73.72,1.06,0.28,78.1,7.7
+Allegiant Air,77436,72.0,0.84,0.32,263.8,17.2
+American Airlines,583147,71.81,2.84,0.41,250.6,13.8
+Frontier Airlines,127106,70.52,2.22,0.22,231.9,14.0
+JetBlue Airways,141892,68.51,3.99,0.35,220.1,13.4
+PSA Airlines,141896,68.3,5.77,0.33,320.3,17.3
+Spirit Airlines,47202,59.84,7.47,0.16,213.1,19.5
