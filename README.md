@@ -91,6 +91,26 @@ intervals are under ±0.6 points, so the ranking is not noise.
 More figures: `outputs/figures/02_on_time_heatmap.png` (carrier × month),
 `05_airports.png`, `06_cancellations.png`.
 
+**6. A ranking can reverse once airport and month are held constant (Simpson's paradox)**.
+`src/simpsons.py` compares every pair of carriers two ways: on all of their flights, and at the
+same origin airport in the same month (cells where both carriers have at least 50 flights,
+each cell weighted by the two carriers' combined flights). 8 of 78 pairs reverse. Three of them
+cover at least half of both carriers' flights, so they are the ones to trust:
+Pair	Overall difference	Same airport and month (95% interval)
+American minus Southwest	-1.9 points	+2.2 points (+1.9 to +2.4)
+Alaska minus United	+1.5 points	-0.7 points (-1.2 to -0.3)
+Alaska minus Delta	+0.6 points	-0.9 points (-1.6 to -0.1)
+American trails Southwest overall (71.8% vs 73.7%), but the flight-weighted comparison at shared
+airport-months favors American by 2.2 points. American wins only 305 of the 597 compared cells,
+so the reversal comes from large airport-months, not from American winning most places.
+The other five reversals rest on a small share of one carrier's flights and are listed in
+`outputs/tables/simpsons_paradox_pairs.csv` with a `robust` flag.
+Run it with `python src/simpsons.py` (it reads the BI extract, so it needs no database).
+![Overall vs like-for-like](outputs/figures/07_simpsons_paradox.png)
+Limits: airport and month are the only controls (time of day, route and weather are not);
+on-time performance is attributed to the origin airport; the intervals treat flights as
+independent, so they are somewhat optimistic.
+
 ## How to run it
 
 1. **Get the data.** From BTS TranStats,
