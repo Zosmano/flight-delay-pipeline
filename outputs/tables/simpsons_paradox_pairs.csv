@@ -1,0 +1,79 @@
+carrier_a,carrier_b,cells_compared,coverage_a,coverage_b,overall_diff_pts,adjusted_diff_pts,adjusted_lo,adjusted_hi,cells_a_better,reversal,robust
+American Airlines,Southwest Airlines,597,0.752,0.814,-1.911,2.174,1.925,2.423,305,True,True
+Alaska Airlines,United Airlines,331,0.89,0.851,1.548,-0.731,-1.212,-0.251,170,True,True
+Alaska Airlines,Delta Air Lines,339,0.902,0.758,0.554,-0.877,-1.64,-0.115,138,True,True
+Alaska Airlines,Republic Airways,124,0.08,0.534,4.392,-1.653,-2.507,-0.799,65,True,False
+Allegiant Air,Southwest Airlines,135,0.333,0.213,-1.721,2.472,1.487,3.456,39,True,False
+Republic Airways,SkyWest Airlines,259,0.441,0.272,-1.198,6.426,5.944,6.907,168,True,False
+Alaska Airlines,Envoy Air,136,0.266,0.524,0.673,-3.289,-4.364,-2.214,76,True,False
+Allegiant Air,American Airlines,188,0.403,0.116,0.19,-2.662,-3.386,-1.937,72,True,False
+Alaska Airlines,Spirit Airlines,76,0.077,0.698,19.665,15.477,14.252,16.703,68,False,False
+Delta Air Lines,Spirit Airlines,137,0.326,0.95,19.111,18.926,18.076,19.776,127,False,False
+Envoy Air,Spirit Airlines,74,0.277,0.425,18.992,19.31,18.195,20.425,66,False,False
+Spirit Airlines,United Airlines,133,0.937,0.304,-18.117,-20.125,-20.798,-19.451,12,False,False
+SkyWest Airlines,Spirit Airlines,72,0.147,0.363,16.471,9.32,8.326,10.314,49,False,False
+Republic Airways,Spirit Airlines,77,0.352,0.494,15.273,15.372,14.465,16.279,69,False,False
+Southwest Airlines,Spirit Airlines,122,0.234,0.814,13.879,11.354,10.609,12.1,113,False,False
+Allegiant Air,Spirit Airlines,29,0.08,0.263,12.158,4.612,3.07,6.153,16,False,False
+American Airlines,Spirit Airlines,137,0.385,0.95,11.968,11.922,11.132,12.711,116,False,False
+Alaska Airlines,PSA Airlines,97,0.052,0.389,11.202,9.609,8.324,10.894,81,False,False
+Alaska Airlines,JetBlue Airways,150,0.319,0.65,10.994,8.135,7.129,9.141,108,False,False
+Frontier Airlines,Spirit Airlines,105,0.345,0.891,10.682,8.113,7.392,8.835,76,False,False
+Delta Air Lines,PSA Airlines,409,0.541,0.875,10.647,8.867,8.139,9.594,382,False,False
+Envoy Air,PSA Airlines,345,0.588,0.736,10.529,10.503,9.948,11.059,274,False,False
+Delta Air Lines,JetBlue Airways,296,0.693,0.953,10.44,9.033,8.344,9.723,261,False,False
+Envoy Air,JetBlue Airways,143,0.335,0.335,10.322,6.546,5.146,7.947,93,False,False
+PSA Airlines,United Airlines,256,0.722,0.314,-9.654,-9.63,-10.479,-8.78,50,False,False
+JetBlue Airways,United Airlines,256,0.764,0.717,-9.447,-8.958,-9.698,-8.217,53,False,False
+Alaska Airlines,Frontier Airlines,224,0.557,0.773,8.984,5.447,4.641,6.254,173,False,False
+JetBlue Airways,Spirit Airlines,82,0.342,0.748,8.671,10.339,9.496,11.183,59,False,False
+PSA Airlines,Spirit Airlines,54,0.225,0.283,8.464,9.11,7.835,10.386,41,False,False
+Delta Air Lines,Frontier Airlines,332,0.834,0.954,8.429,9.795,9.384,10.206,300,False,False
+Envoy Air,Frontier Airlines,178,0.583,0.492,8.311,7.465,6.765,8.166,131,False,False
+PSA Airlines,SkyWest Airlines,340,0.566,0.282,-8.007,-1.959,-2.666,-1.252,147,False,False
+JetBlue Airways,SkyWest Airlines,145,0.183,0.425,-7.8,-4.971,-6.036,-3.907,57,False,False
+Alaska Airlines,American Airlines,331,0.876,0.675,7.697,4.784,4.219,5.349,222,False,False
+Alaska Airlines,Allegiant Air,55,0.082,0.146,7.507,5.898,4.291,7.504,35,False,False
+Frontier Airlines,United Airlines,319,0.941,0.873,-7.436,-8.025,-8.489,-7.561,48,False,False
+American Airlines,Delta Air Lines,681,0.983,0.958,-7.143,-5.721,-5.988,-5.454,117,False,False
+American Airlines,Envoy Air,373,0.688,0.715,-7.024,-8.784,-9.101,-8.467,150,False,False
+Allegiant Air,Delta Air Lines,190,0.41,0.124,-6.953,-9.068,-9.817,-8.319,29,False,False
+Allegiant Air,Envoy Air,171,0.3,0.126,-6.834,-6.924,-7.807,-6.041,46,False,False
+PSA Airlines,Republic Airways,294,0.659,0.524,-6.809,-9.181,-9.698,-8.664,51,False,False
+JetBlue Airways,Republic Airways,174,0.524,0.73,-6.602,-5.086,-5.652,-4.519,55,False,False
+American Airlines,United Airlines,626,0.956,0.975,-6.15,-5.219,-5.497,-4.941,204,False,False
+Allegiant Air,United Airlines,153,0.339,0.176,-5.959,-2.523,-4.149,-0.897,52,False,False
+Frontier Airlines,SkyWest Airlines,218,0.633,0.579,-5.789,-3.409,-3.884,-2.934,59,False,False
+Alaska Airlines,Southwest Airlines,319,0.855,0.664,5.786,6.391,5.983,6.799,220,False,False
+PSA Airlines,Southwest Airlines,303,0.684,0.264,-5.416,-6.091,-6.759,-5.423,59,False,False
+Delta Air Lines,Southwest Airlines,623,0.896,0.956,5.231,7.459,7.221,7.696,466,False,False
+JetBlue Airways,Southwest Airlines,263,0.76,0.488,-5.209,-1.393,-2.012,-0.775,108,False,False
+Envoy Air,Southwest Airlines,363,0.469,0.433,5.113,3.511,2.879,4.144,191,False,False
+Frontier Airlines,Republic Airways,176,0.405,0.756,-4.591,-8.835,-9.658,-8.011,44,False,False
+American Airlines,SkyWest Airlines,505,0.677,0.745,-4.503,-2.681,-2.995,-2.366,219,False,False
+Allegiant Air,SkyWest Airlines,218,0.382,0.122,-4.313,-1.203,-2.467,0.06,98,False,False
+Southwest Airlines,United Airlines,551,0.797,0.728,-4.238,-6.27,-6.511,-6.029,196,False,False
+Delta Air Lines,Republic Airways,375,0.63,0.965,3.838,3.723,3.147,4.3,290,False,False
+Envoy Air,Republic Airways,288,0.452,0.605,3.72,1.264,0.733,1.794,157,False,False
+Allegiant Air,PSA Airlines,146,0.263,0.129,3.695,-0.417,-1.387,0.554,69,False,False
+American Airlines,PSA Airlines,318,0.534,0.77,3.504,2.836,2.448,3.225,248,False,False
+Allegiant Air,JetBlue Airways,70,0.18,0.266,3.488,2.095,0.59,3.599,37,False,False
+American Airlines,Republic Airways,372,0.531,0.968,-3.305,-1.942,-2.397,-1.486,179,False,False
+American Airlines,JetBlue Airways,284,0.519,0.93,3.297,3.66,3.022,4.297,192,False,False
+Frontier Airlines,Southwest Airlines,309,0.861,0.684,-3.198,-0.486,-0.947,-0.026,116,False,False
+Alaska Airlines,SkyWest Airlines,247,0.602,0.617,3.194,1.55,1.11,1.99,151,False,False
+Allegiant Air,Republic Airways,128,0.228,0.25,-3.115,-3.341,-4.575,-2.107,44,False,False
+Republic Airways,United Airlines,303,0.885,0.484,-2.845,-0.911,-1.379,-0.443,133,False,False
+Delta Air Lines,SkyWest Airlines,532,0.729,0.741,2.64,4.418,4.097,4.739,425,False,False
+SkyWest Airlines,Southwest Airlines,475,0.667,0.673,2.591,4.103,3.806,4.4,242,False,False
+Envoy Air,SkyWest Airlines,475,0.739,0.471,2.522,5.833,5.381,6.285,308,False,False
+Frontier Airlines,PSA Airlines,130,0.371,0.601,2.218,1.663,0.787,2.538,70,False,False
+Frontier Airlines,JetBlue Airways,208,0.75,0.788,2.011,-0.273,-0.975,0.43,94,False,False
+SkyWest Airlines,United Airlines,512,0.754,0.749,-1.647,-2.369,-2.6,-2.139,220,False,False
+Allegiant Air,Frontier Airlines,60,0.184,0.159,1.477,2.557,1.235,3.878,34,False,False
+Republic Airways,Southwest Airlines,294,0.793,0.315,1.393,1.789,1.333,2.245,145,False,False
+American Airlines,Frontier Airlines,325,0.864,0.947,1.286,1.585,1.17,2.0,226,False,False
+Delta Air Lines,United Airlines,620,0.91,0.971,0.993,0.589,0.313,0.865,409,False,False
+Envoy Air,United Airlines,348,0.683,0.513,0.875,-0.134,-0.845,0.576,185,False,False
+JetBlue Airways,PSA Airlines,150,0.187,0.418,0.207,4.6,3.649,5.551,92,False,False
+Delta Air Lines,Envoy Air,466,0.63,0.771,0.118,2.234,1.164,3.303,337,False,False
