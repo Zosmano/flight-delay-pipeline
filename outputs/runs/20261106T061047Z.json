@@ -1,7 +1,7 @@
 {
-  "run_id": "20261106T054940Z",
+  "run_id": "20261106T061047Z",
   "status": "success",
-  "started_utc": "2026-11-06T05:49:40+00:00",
+  "started_utc": "2026-11-06T06:10:47+00:00",
   "config": "pipeline.toml",
   "load": {
     "files": [
@@ -40,86 +40,86 @@
     {
       "check_id": "DQ-01",
       "description": "Every monthly file has the columns the pipeline needs",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-02",
       "description": "Every row the manifest says was inserted is in the table",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-03",
       "description": "Each file holds exactly one month of 2026",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-04",
       "description": "Key fields are never blank (date, carrier, origin, destination, schedule, status)",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-05",
       "description": "Carrier codes exist in the BTS carrier lookup",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-06",
       "description": "Origin and destination codes exist in the BTS airport lookup",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-07",
       "description": "Cancelled flights have a valid reason code, and other flights have none",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-08",
       "description": "Cancelled flights have no arrival time or arrival delay",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-09",
       "description": "Operated flights have an arrival delay",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-10",
       "description": "The 15-minute flag agrees with the arrival delay",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-11",
       "description": "Scheduled times are valid hhmm clock times",
-      "severity": "error",
+      "severity": "blocking",
       "violations": 0,
       "status": "pass"
     },
     {
       "check_id": "DQ-12",
       "description": "Delay-cause minutes add up to the arrival delay (flights 15+ min late)",
-      "severity": "warn",
+      "severity": "flag",
       "violations": 105,
-      "status": "warn"
+      "status": "flagged"
     }
   ],
   "reconciliation": {
@@ -128,7 +128,7 @@
     "max_abs_difference_pts": 0.0498
   },
   "paradox": {
-    "run_id": "20261106T054940Z",
+    "run_id": "20261106T061047Z",
     "carrier_a": "SkyWest",
     "carrier_b": "Southwest",
     "airports": [

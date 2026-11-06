@@ -1,6 +1,6 @@
-# Run report: 20261106T054940Z
+# Run report: 20261106T061047Z
 
-Status: **success**. Started 2026-11-06 05:49 UTC, 84 seconds.
+Status: **success**. Started 2026-11-06 06:10 UTC, 46 seconds.
 
 ## 1. Load
 
@@ -18,22 +18,24 @@ Status: **success**. Started 2026-11-06 05:49 UTC, 84 seconds.
 
 ## 2. Data-quality checks
 
-11 passed, 1 warnings, 0 failed.
+All 12 checks ran: 11 found no problems, 0 stopped the run and 1 flagged rows for review.
 
-| Check | Description | Severity | Violations | Result |
-|---|---|---|---:|---|
-| DQ-01 | Every monthly file has the columns the pipeline needs | error | 0 | pass |
-| DQ-02 | Every row the manifest says was inserted is in the table | error | 0 | pass |
-| DQ-03 | Each file holds exactly one month of 2026 | error | 0 | pass |
-| DQ-04 | Key fields are never blank (date, carrier, origin, destination, schedule, status) | error | 0 | pass |
-| DQ-05 | Carrier codes exist in the BTS carrier lookup | error | 0 | pass |
-| DQ-06 | Origin and destination codes exist in the BTS airport lookup | error | 0 | pass |
-| DQ-07 | Cancelled flights have a valid reason code, and other flights have none | error | 0 | pass |
-| DQ-08 | Cancelled flights have no arrival time or arrival delay | error | 0 | pass |
-| DQ-09 | Operated flights have an arrival delay | error | 0 | pass |
-| DQ-10 | The 15-minute flag agrees with the arrival delay | error | 0 | pass |
-| DQ-11 | Scheduled times are valid hhmm clock times | error | 0 | pass |
-| DQ-12 | Delay-cause minutes add up to the arrival delay (flights 15+ min late) | warn | 105 | warn |
+DQ-12 flagged 105 flights: 104 where every cause was reported as 0 minutes; 1 where no causes were reported (carriers: WN 104, F9 1). These come from the BTS source files. The flights are valid for on-time reporting, so they are kept, and each one is listed in `dq_exceptions.csv`.
+
+| Check | What it tests | If it finds a problem | Result |
+|---|---|---|---|
+| DQ-01 | Every monthly file has the columns the pipeline needs | stops the run | pass |
+| DQ-02 | Every row the manifest says was inserted is in the table | stops the run | pass |
+| DQ-03 | Each file holds exactly one month of 2026 | stops the run | pass |
+| DQ-04 | Key fields are never blank (date, carrier, origin, destination, schedule, status) | stops the run | pass |
+| DQ-05 | Carrier codes exist in the BTS carrier lookup | stops the run | pass |
+| DQ-06 | Origin and destination codes exist in the BTS airport lookup | stops the run | pass |
+| DQ-07 | Cancelled flights have a valid reason code, and other flights have none | stops the run | pass |
+| DQ-08 | Cancelled flights have no arrival time or arrival delay | stops the run | pass |
+| DQ-09 | Operated flights have an arrival delay | stops the run | pass |
+| DQ-10 | The 15-minute flag agrees with the arrival delay | stops the run | pass |
+| DQ-11 | Scheduled times are valid hhmm clock times | stops the run | pass |
+| DQ-12 | Delay-cause minutes add up to the arrival delay (flights 15+ min late) | lists the rows; run continues | 105 rows flagged |
 
 ## 3. Reconciliation with DOT's published figures
 
@@ -75,5 +77,5 @@ Strata are destination airport by month; the stratified estimate uses Mantel-Hae
 ## Outputs
 
 - `bay_area_carrier_summary.csv`, `paradox_strata.csv`, `paradox_by_airport.csv`, `paradox_summary.json`, `paradox.png`
-- `reconciliation_vs_dot.csv`
+- `reconciliation_vs_dot.csv`, `dq_exceptions.csv`
 - `runs/<run id>.json`: this run's record

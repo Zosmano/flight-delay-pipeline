@@ -29,7 +29,7 @@ def main(argv=None):
                     help="run = every stage; the others stop after that stage")
     ap.add_argument("--config", help="path to pipeline.toml")
     ap.add_argument("--full-refresh", action="store_true", help="rebuild the database from scratch")
-    ap.add_argument("--fail-on-warn", action="store_true", help="treat warning checks as failures")
+    ap.add_argument("--strict", action="store_true", help="also stop the run if a flag check finds rows")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)
 
@@ -45,7 +45,7 @@ def main(argv=None):
     try:
         load_result = load.run(cfg, full_refresh=args.full_refresh)
         dq = quality.run(cfg, run_id, load_result)
-        failed = dq.status.eq("fail") | (args.fail_on_warn & dq.status.eq("warn"))
+        failed = dq.status.eq("fail") | (args.strict & dq.status.eq("flagged"))
         if failed.any():
             code = 2
             log.error("stopping: %d data-quality check(s) failed", int(failed.sum()))

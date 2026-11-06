@@ -26,12 +26,24 @@ def write(cfg, run_id, started, load_result, dq, rec, par, status):
     action = {f["file"]: f["action"] for f in load_result["files"]}
     for r in manifest.itertuples():
         L.append(f"| {r.file} | {r.periods} | {r.rows_inserted:,} | {r.duplicates:,} | {action.get(r.file, 'not seen')} |")
+    flagged = dq[dq.status == "flagged"]
     L += ["", "## 2. Data-quality checks", "",
-          f"{(dq.status == 'pass').sum()} passed, {(dq.status == 'warn').sum()} warnings, "
-          f"{(dq.status == 'fail').sum()} failed.", "",
-          "| Check | Description | Severity | Violations | Result |", "|---|---|---|---:|---|"]
+          f"All {len(dq)} checks ran: {(dq.status == 'pass').sum()} found no problems, "
+          f"{(dq.status == 'fail').sum()} stopped the run and {len(flagged)} flagged rows for review."]
+    if len(flagged):
+        exc = pd.read_csv(out / "dq_exceptions.csv")
+        for r in flagged.itertuples():
+            e = exc[exc.check_id == r.check_id]
+            L += ["", f"{r.check_id} flagged {r.violations:,} flights: " +
+                  "; ".join(f"{n:,} where {k}" for k, n in e.finding.value_counts().items()) +
+                  f" (carriers: {', '.join(f'{c} {n}' for c, n in e.OP_UNIQUE_CARRIER.value_counts().items())}). "
+                  "These come from the BTS source files. The flights are valid for on-time reporting, so they "
+                  "are kept, and each one is listed in `dq_exceptions.csv`."]
+    L += ["", "| Check | What it tests | If it finds a problem | Result |", "|---|---|---|---|"]
+    effect = {"blocking": "stops the run", "flag": "lists the rows; run continues"}
     for r in dq.itertuples():
-        L.append(f"| {r.check_id} | {r.description} | {r.severity} | {r.violations:,} | {r.status} |")
+        res = "pass" if r.status == "pass" else f"{r.violations:,} rows {'flagged' if r.status == 'flagged' else 'failed'}"
+        L.append(f"| {r.check_id} | {r.description} | {effect[r.severity]} | {res} |")
     if rec is not None:
         n, ok = len(rec), int(rec.match.sum())
         man = int((rec.method == "manual").sum())
@@ -76,7 +88,7 @@ def write(cfg, run_id, started, load_result, dq, rec, par, status):
               "Strata are destination airport by month; the stratified estimate uses Mantel-Haenszel weights. "
               "On time follows DOT: cancelled and diverted flights count as late and stay in the denominator."]
     L += ["", "## Outputs", "", "- `bay_area_carrier_summary.csv`, `paradox_strata.csv`, `paradox_by_airport.csv`, "
-          "`paradox_summary.json`, `paradox.png`", "- `reconciliation_vs_dot.csv`", "- `runs/<run id>.json`: this run's record"]
+          "`paradox_summary.json`, `paradox.png`", "- `reconciliation_vs_dot.csv`, `dq_exceptions.csv`", "- `runs/<run id>.json`: this run's record"]
     (out / "run_report.md").write_text("\n".join(L) + "\n", encoding="utf-8")
     runs = out / "runs"
     runs.mkdir(exist_ok=True)

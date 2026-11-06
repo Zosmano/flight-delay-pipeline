@@ -6,8 +6,8 @@ Transportation Statistics (BTS) on-time files, January to July 2026, into SQLite
 tests the Southwest and SkyWest comparison into the Bay Area for a Simpson's paradox.
 
 One command runs everything and writes a dated report. A rerun on unchanged files only checks
-them, and a new or revised month is picked up automatically. Any failed check stops the run with
-a non-zero exit code, so a scheduler or CI job can alert on it.
+them, and a new or revised month is picked up automatically. A blocking data problem stops the run
+with a non-zero exit code, so a scheduler or CI job can alert on it.
 
 ```
 python -m flightpipe run
@@ -15,10 +15,10 @@ python -m flightpipe run
 
 ## Results from the current run
 
-| | |
+| Measure | Result |
 |---|---|
 | Records loaded | **4,120,342** flights from 7 files (1 exact duplicate skipped) |
-| Data-quality checks | **11 of 12 pass**; 1 warning (105 delayed flights whose cause minutes don't sum to the delay) |
+| Data-quality checks | **All 12 ran; 0 stopped the run.** One check flagged 105 BTS source flights for review (see below) |
 | Published DOT figures reproduced | **96 of 96** within the ±0.05-point rounding band (89 carrier-months and 7 monthly totals); largest difference 0.050 |
 | Bay Area, pooled | Southwest **73.0%** on time vs SkyWest **65.0%** (gap −8.0 points, 95% CI −9.6 to −6.5) |
 | Bay Area, same airport and month | SkyWest ahead by **+9.6 points** (95% CI +8.2 to +11.0) across 21 airport-by-month groups |
@@ -60,8 +60,9 @@ Two kinds of 95% interval are given:
 ```
 monthly BTS CSVs ─► load ─────────────► check ───────────► reconcile ───────────► analyze ─────────► report
 (any file names)    SHA-256 manifest,   12 checks,         parse DOT Table 1A/1B   21 airport-month   run_report.md,
-                    skip unchanged,     fail the run on    from the ATCR PDFs,     strata, MH and     runs/<id>.json,
-                    replace revised,    any error          compare 96 figures      bootstrap CIs      logs/<id>.log
+                    skip unchanged,     stop on blocking   from the ATCR PDFs,     strata, MH and     runs/<id>.json,
+                    replace revised,    problems, list     compare 96 figures      bootstrap CIs      logs/<id>.log
+                                        flagged rows
                     drop duplicates
 ```
 
@@ -75,20 +76,31 @@ monthly BTS CSVs ─► load ─────────────► check �
 
 ### The 12 checks
 
-| Check | Rule | Severity |
-|---|---|---|
-| DQ-01 | Every monthly file has the 23 columns the pipeline needs | error |
-| DQ-02 | Every row the manifest says was inserted is in the table | error |
-| DQ-03 | Each file holds exactly one month of the configured year | error |
-| DQ-04 | Date, carrier, origin, destination, schedule and status are never blank | error |
-| DQ-05 | Carrier codes exist in the BTS carrier lookup | error |
-| DQ-06 | Airport codes exist in the BTS airport lookup | error |
-| DQ-07 | Cancelled flights have a valid reason code, and other flights have none | error |
-| DQ-08 | Cancelled flights have no arrival time or delay | error |
-| DQ-09 | Operated flights have an arrival delay | error |
-| DQ-10 | The 15-minute flag agrees with the arrival delay | error |
-| DQ-11 | Scheduled times are valid hhmm clock times | error |
-| DQ-12 | Delay-cause minutes add up to the arrival delay | warning |
+| Check | Rule | If it finds a problem | Current run |
+|---|---|---|---|
+| DQ-01 | Every monthly file has the 23 columns the pipeline needs | stops the run | pass |
+| DQ-02 | Every row the manifest says was inserted is in the table | stops the run | pass |
+| DQ-03 | Each file holds exactly one month of the configured year | stops the run | pass |
+| DQ-04 | Date, carrier, origin, destination, schedule and status are never blank | stops the run | pass |
+| DQ-05 | Carrier codes exist in the BTS carrier lookup | stops the run | pass |
+| DQ-06 | Airport codes exist in the BTS airport lookup | stops the run | pass |
+| DQ-07 | Cancelled flights have a valid reason code, and other flights have none | stops the run | pass |
+| DQ-08 | Cancelled flights have no arrival time or delay | stops the run | pass |
+| DQ-09 | Operated flights have an arrival delay | stops the run | pass |
+| DQ-10 | The 15-minute flag agrees with the arrival delay | stops the run | pass |
+| DQ-11 | Scheduled times are valid hhmm clock times | stops the run | pass |
+| DQ-12 | Delay-cause minutes add up to the arrival delay | lists the rows; run continues | 105 flights flagged |
+
+**What DQ-12 found.** Of 926,183 operated flights that arrived 15 or more minutes late, 105
+(0.01%) have no delay cause recorded. In 104 of them, all Southwest flights from March to July,
+the airline reported the delay but put 0 minutes against all five causes. The other is a
+Frontier flight with the cause fields blank. BTS's own files show the same: its separately
+published June file, and its current online July file, checked November 2026.
+
+This is a gap in the source data, not a loading error, so the pipeline doesn't invent causes.
+The flights are valid for on-time reporting and stay in the data, and each one is listed in
+[`outputs/dq_exceptions.csv`](outputs/dq_exceptions.csv) for follow-up. `--strict` makes a flagged
+check stop the run.
 
 ### Where the 96 published figures come from
 
@@ -118,7 +130,7 @@ This is why SkyWest's Bay Area count is 22,481 flights and Southwest's is 36,727
 | `python -m flightpipe run` | Every stage. About 7 minutes the first time, about 75 seconds when nothing has changed |
 | `python -m flightpipe check` | Load new files and run the checks only |
 | `python -m flightpipe run --full-refresh` | Rebuild the database from scratch |
-| `python -m flightpipe run --fail-on-warn` | Treat warnings as failures |
+| `python -m flightpipe run --strict` | Also stop the run if a check flags rows |
 | `python -m pytest` | Run the 9 tests, which use synthetic data and need no download |
 
 **Exit codes:** `0` success, `2` a data-quality check failed, `3` a published figure was not

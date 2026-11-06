@@ -32,6 +32,13 @@ def write_month(folder, rows, name="T_ONTIME_REPORTING_Jan.csv"):
     pd.DataFrame(rows, columns=COLS).to_csv(Path(folder) / name, index=False)
 
 
+@pytest.fixture(autouse=True)
+def isolated_env(monkeypatch):
+    """Tests must never read the real data folder, whatever the shell has set."""
+    monkeypatch.delenv("FLIGHTPIPE_RAW_DIR", raising=False)
+    monkeypatch.delenv("FLIGHTPIPE_CONFIG", raising=False)
+
+
 @pytest.fixture
 def workspace(tmp_path):
     raw = tmp_path / "raw"
