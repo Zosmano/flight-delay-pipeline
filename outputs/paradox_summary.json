@@ -1,0 +1,54 @@
+{
+  "run_id": "20261106T054940Z",
+  "carrier_a": "SkyWest",
+  "carrier_b": "Southwest",
+  "airports": [
+    "OAK",
+    "SFO",
+    "SJC"
+  ],
+  "flights": {
+    "SkyWest": 22481,
+    "Southwest": 36727
+  },
+  "pooled_rate_pct": {
+    "SkyWest": 65.02379787376006,
+    "Southwest": 73.02529474228768
+  },
+  "crude_diff_pts": {
+    "estimate": -8.001496868527635,
+    "ci_wald": [
+      -8.772635787275172,
+      -7.230357949780099
+    ],
+    "ci_day_bootstrap": [
+      -9.585989537912097,
+      -6.4857253484808846
+    ]
+  },
+  "stratified_diff_pts": {
+    "estimate": 9.643363824857959,
+    "ci_wald": [
+      8.745987534443799,
+      10.540740115272119
+    ],
+    "ci_day_bootstrap": [
+      8.24905123820669,
+      10.9603721687951
+    ]
+  },
+  "strata_used": 21,
+  "strata_dropped": 0,
+  "strata_where_a_leads": 18,
+  "strata_where_a_leads_significantly": 15,
+  "strata_where_b_leads_significantly": 0,
+  "months_a_led_pooled": [
+    3
+  ],
+  "bootstrap": {
+    "reps": 2000,
+    "seed": 2026,
+    "cluster": "flight date"
+  },
+  "paradox": true
+}

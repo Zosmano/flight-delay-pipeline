@@ -1,0 +1,17 @@
+period,carrier,scheduled_flights,on_time_flights,on_time_rate_pct
+2026-01,SkyWest,3208,2563,79.89
+2026-01,Southwest,4798,4155,86.6
+2026-02,SkyWest,2932,2144,73.12
+2026-02,Southwest,4775,3907,81.82
+2026-03,SkyWest,3373,2861,84.82
+2026-03,Southwest,5381,4319,80.26
+2026-04,SkyWest,3198,1915,59.88
+2026-04,Southwest,5216,3716,71.24
+2026-05,SkyWest,3252,1751,53.84
+2026-05,Southwest,5374,3665,68.2
+2026-06,SkyWest,3248,1671,51.45
+2026-06,Southwest,5481,3181,58.04
+2026-07,SkyWest,3270,1713,52.39
+2026-07,Southwest,5702,3877,67.99
+2026 Jan-Jul overall,SkyWest,22481,14618,65.02
+2026 Jan-Jul overall,Southwest,36727,26820,73.03

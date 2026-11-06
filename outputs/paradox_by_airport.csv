@@ -1,0 +1,4 @@
+airport,flights_OO,flights_WN,rate_OO_pct,rate_WN_pct,share_of_a_flights,share_of_b_flights,stratified_diff_pts,ci_low,ci_high
+OAK,1002,15679,87.1257,78.1364,0.0446,0.4269,10.5845,8.4166,12.7524
+SFO,18190,5926,59.8626,48.3969,0.8091,0.1614,9.7185,8.3751,11.0619
+SJC,3289,15122,86.8349,77.3773,0.1463,0.4117,9.1926,7.8689,10.5163

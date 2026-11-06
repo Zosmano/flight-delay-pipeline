@@ -1,152 +1,166 @@
-# U.S. Flight Delay Pipeline — 4.1M flights, Jan–Jul 2026
+# Automated reporting pipeline: 4.1M U.S. flight records
 
-An end-to-end Python + SQL pipeline that loads seven months of U.S. DOT Bureau of
-Transportation Statistics (BTS) on-time data (**4,120,342 domestic flights, 13
-carriers, 357 airports**) into SQLite, validates the results against DOT's own
-published figures, and answers four operational questions:
+A reproducible ETL pipeline in Python, SQL and SQLite. It loads seven monthly Bureau of
+Transportation Statistics (BTS) on-time files, January to July 2026, into SQLite. It then runs
+12 data-quality checks, reproduces every on-time figure DOT published for those months, and
+tests the Southwest and SkyWest comparison into the Bay Area for a Simpson's paradox.
 
-1. Which carriers are most reliable, and does on-time rank tell the whole story?
-2. What actually causes delay minutes, and how much is within an airline's control?
-3. How do delays build up through the day?
-4. Which airports and months drive cancellations and late departures?
-
-![On-time rate by carrier](outputs/figures/01_carrier_on_time.png)
-
-## Pipeline
+One command runs everything and writes a dated report. A rerun on unchanged files only checks
+them, and a new or revised month is picked up automatically. Any failed check stops the run with
+a non-zero exit code, so a scheduler or CI job can alert on it.
 
 ```
-data/raw/*.csv  ──►  ingest.py  ──►  data/flights.db (SQLite)  ──►  validate.py  ──►  analyze.py
- 7 BTS files         chunked load,        indexed `flights`           checks vs DOT       sql/*.sql →
- (54 columns)        type casting,        table + lookups             Air Travel          tables (CSV)
-                     de-duplication,                                  Consumer Report     + figures (PNG)
-                     derived fields,
-                     quality checks  ─────────────────────────────►  outputs/data_quality_report.md
+python -m flightpipe run
 ```
 
-| Step | File | What it does |
+## Results from the current run
+
+| | |
+|---|---|
+| Records loaded | **4,120,342** flights from 7 files (1 exact duplicate skipped) |
+| Data-quality checks | **11 of 12 pass**; 1 warning (105 delayed flights whose cause minutes don't sum to the delay) |
+| Published DOT figures reproduced | **96 of 96** within the ±0.05-point rounding band (89 carrier-months and 7 monthly totals); largest difference 0.050 |
+| Bay Area, pooled | Southwest **73.0%** on time vs SkyWest **65.0%** (gap −8.0 points, 95% CI −9.6 to −6.5) |
+| Bay Area, same airport and month | SkyWest ahead by **+9.6 points** (95% CI +8.2 to +11.0) across 21 airport-by-month groups |
+
+Full detail: [`outputs/run_report.md`](outputs/run_report.md).
+
+![Pooled vs same airport and month](outputs/paradox.png)
+
+## The Simpson's paradox
+
+Pooled across Oakland (OAK), San Francisco (SFO) and San José (SJC), Southwest arrives on time
+more often than SkyWest, and leads in 6 of 7 months. Compare them at the same airport, though,
+and SkyWest leads at all three:
+
+| Airport | SkyWest | Southwest | Share of SkyWest flights | Share of Southwest flights |
+|---|---:|---:|---:|---:|
+| OAK | 87.1% | 78.1% | 4% | 43% |
+| SFO | 59.9% | 48.4% | 81% | 16% |
+| SJC | 86.8% | 77.4% | 15% | 41% |
+
+The reversal comes from where each airline flies. About four in five SkyWest arrivals land at
+SFO, which is much the hardest airport of the three, while most Southwest arrivals land at OAK and
+SJC. Pooling therefore compares SkyWest's SFO-heavy schedule with Southwest's easier one.
+
+For a traveller whose destination airport is fixed, the like-for-like figure is the one that
+matters. Holding airport and month fixed, SkyWest is ahead in 18 of 21 airport-by-month groups,
+significantly in 15. Southwest is not significantly ahead in any of them: its three leads (SFO in
+January, SJC in January and February) are within 2 points, and their intervals cross zero.
+
+**Method.** Each stratum is one destination airport in one month. Differences are combined with
+Mantel-Haenszel weights, n<sub>SkyWest</sub>·n<sub>Southwest</sub> / (n<sub>SkyWest</sub> + n<sub>Southwest</sub>).
+Two kinds of 95% interval are given:
+- **Wald:** treats flights as independent.
+- **Cluster bootstrap:** resamples whole days, 2,000 times. Flights on the same day share weather
+  and air-traffic delays, so this interval is wider and more honest.
+
+## What the pipeline does
+
+```
+monthly BTS CSVs ─► load ─────────────► check ───────────► reconcile ───────────► analyze ─────────► report
+(any file names)    SHA-256 manifest,   12 checks,         parse DOT Table 1A/1B   21 airport-month   run_report.md,
+                    skip unchanged,     fail the run on    from the ATCR PDFs,     strata, MH and     runs/<id>.json,
+                    replace revised,    any error          compare 96 figures      bootstrap CIs      logs/<id>.log
+                    drop duplicates
+```
+
+| Stage | Module | What it does |
 |---|---|---|
-| Ingest | `src/ingest.py` | Streams each monthly CSV in 250k-row chunks, keeps 27 of 54 fields, drops exact duplicate rows across files, adds derived fields (DOT on-time flag, operated flag, scheduled departure hour, 3h+ severe-delay flag), loads SQLite and builds indexes. Runs 12 data-quality checks. |
-| Validate | `src/validate.py` | Recomputes on-time % for every carrier and month and compares it with Table 1A of the DOT Air Travel Consumer Report (`reference/atcr_table1a_ontime.csv`). |
-| Analyse | `src/analyze.py`, `sql/*.sql` | Seven SQL queries produce the analysis tables; Python adds Wilson confidence intervals and draws the charts. |
-| BI extract | `sql/07_tableau_extract.sql` | A compact month × carrier × airport table (10k rows) for building a Tableau or Power BI dashboard on top. |
+| Load | `flightpipe/load.py` | Finds every CSV with BTS flight columns, fingerprints it with SHA-256, and streams it in 250,000-row chunks into an indexed `flights` table. A row hash under a unique index means a duplicate row is never stored twice. Unchanged files are skipped, and a changed file has its old rows replaced, because BTS revises months. Lookup tables are loaded too. |
+| Check | `flightpipe/quality.py` | 12 checks (below). Results go in the `dq_results` table on every run. |
+| Reconcile | `flightpipe/reference.py`, `reconcile.py` | Extracts DOT's published rates from the Air Travel Consumer Report PDFs, recomputes each one from the flights, and records the difference. |
+| Analyze | `flightpipe/paradox.py` | Builds the Bay Area summary table, the 21 strata, the stratified estimate with both intervals, and the chart. |
+| Report | `flightpipe/report.py` | Writes `outputs/run_report.md` and a JSON record of the run. |
 
-### Definitions
+### The 12 checks
 
-- **On-time arrival (DOT definition):** the flight operated and arrived less than 15
-  minutes after schedule. Cancelled and diverted flights stay in the denominator
-  and count as *not* on time. This is the definition DOT uses in its monthly
-  Air Travel Consumer Report.
-- **On-time departure:** not cancelled and departed less than 15 minutes late.
-- **Severe delay:** an operated flight arriving 180+ minutes late.
-- **Delay causes:** BTS splits each arrival delay of 15+ minutes into carrier,
-  late-arriving aircraft, National Air System (NAS), weather and security minutes.
+| Check | Rule | Severity |
+|---|---|---|
+| DQ-01 | Every monthly file has the 23 columns the pipeline needs | error |
+| DQ-02 | Every row the manifest says was inserted is in the table | error |
+| DQ-03 | Each file holds exactly one month of the configured year | error |
+| DQ-04 | Date, carrier, origin, destination, schedule and status are never blank | error |
+| DQ-05 | Carrier codes exist in the BTS carrier lookup | error |
+| DQ-06 | Airport codes exist in the BTS airport lookup | error |
+| DQ-07 | Cancelled flights have a valid reason code, and other flights have none | error |
+| DQ-08 | Cancelled flights have no arrival time or delay | error |
+| DQ-09 | Operated flights have an arrival delay | error |
+| DQ-10 | The 15-minute flag agrees with the arrival delay | error |
+| DQ-11 | Scheduled times are valid hhmm clock times | error |
+| DQ-12 | Delay-cause minutes add up to the arrival delay | warning |
 
-## Validation
+### Where the 96 published figures come from
 
-**96 of 96** published DOT on-time figures (89 carrier-months and 7 monthly
-all-carrier totals) are reproduced to within DOT's ±0.05-point rounding band. The
-largest difference is 0.050 points. See `outputs/tables/validation_vs_dot_atcr.csv`
-and `outputs/data_quality_report.md`.
+- **91 are read from the PDFs automatically.** For February to July this is Table 1A of each
+  report. For nine January figures it is Table 1B of the September report, which repeats every
+  month of the year and gives each airline's own flights on a separate row.
+- **5 are typed in.** January's figures for Envoy, PSA, Republic, SkyWest and the all-carrier
+  total appear only in the March 2026 report, which isn't in `reference/atcr/`. They are in
+  `reference/manual_reference.csv` with their source. To remove them, add the March 2026 report
+  to `reference/atcr/`, and the pipeline will read Table 1A instead.
 
-Data-quality findings from the load:
-- One exact duplicate row (May file) removed.
-- 92,611 cancellations: every one has a reason code and no arrival delay recorded.
-- 105 delayed flights whose five cause fields do not sum to the arrival delay —
-  flagged in the report and kept, because the arrival delay itself is valid.
+**Definition.** On time follows DOT: a flight is on time if it operated and arrived less than 15
+minutes late. Cancelled and diverted flights count as not on time and stay in the denominator.
+This is why SkyWest's Bay Area count is 22,481 flights and Southwest's is 36,727.
 
-## Key findings
+## Run it
 
-**1. On-time rank and disruption risk are different things.** Alaska (79.5%) and
-Delta (79.0%) lead on on-time arrivals; Spirit trails at 59.8%. But Southwest,
-7th of 13 on on-time rate (73.7%), has the second-lowest rate of 3-hour-plus
-delays (78 per 10,000 operated flights, vs 320 for PSA and 251 for American).
-A traveller who cares about missing a connection should look at both measures.
-→ `outputs/tables/carrier_scorecard.csv`
+1. **Install:** run `pip install -r requirements.txt` with Python 3.11 or later.
+2. **Add the data:** put the monthly BTS files and the `L_*.csv` lookups in the folder named by
+   `raw_dir` in `pipeline.toml`, or set the `FLIGHTPIPE_RAW_DIR` environment variable. The files
+   come from the BTS [Reporting Carrier On-Time Performance](https://www.transtats.bts.gov/DL_SelectFields.aspx?gnoyr_VQ=FGJ&QO_fu146_anzr=b0-gvzr)
+   download, with all fields and one file per month. File names don't matter.
+3. **Run:**
 
-**2. Most delay minutes are attributed to the airline, not the weather.** For
-every carrier, carrier-caused plus late-arriving-aircraft minutes make up 61–81%
-of all delay minutes. Weather is under 14% for every carrier. Late-arriving
-aircraft is the single largest cause for most carriers (51% of Southwest's and
-52% of Frontier's delay minutes), while SkyWest and Delta lose the most to
-carrier-caused delays (47% and 45%).
+| Command | What it does |
+|---|---|
+| `python -m flightpipe run` | Every stage. About 7 minutes the first time, about 75 seconds when nothing has changed |
+| `python -m flightpipe check` | Load new files and run the checks only |
+| `python -m flightpipe run --full-refresh` | Rebuild the database from scratch |
+| `python -m flightpipe run --fail-on-warn` | Treat warnings as failures |
+| `python -m pytest` | Run the 9 tests, which use synthetic data and need no download |
 
-![Delay causes](outputs/figures/03_delay_causes.png)
+**Exit codes:** `0` success, `2` a data-quality check failed, `3` a published figure was not
+reproduced, `1` any other error.
 
-**3. Delays cascade through the day.** Flights scheduled to leave at 5 a.m. arrive
-on time 91.5% of the time; by 8 p.m. that falls to 66.3%. The growth is mostly
-late-arriving aircraft: 1.2 minutes per flight at 5 a.m. vs 12.5 minutes at
-8 p.m., as delays from earlier legs are passed down the rotation.
+**Scheduling.** To run monthly on Windows, use `run_pipeline.ps1` with Task Scheduler:
 
-![Delays by hour](outputs/figures/04_delay_by_hour.png)
+```
+schtasks /Create /TN "flight-reporting" /SC MONTHLY /D 20 /ST 07:00 /TR "powershell -File C:\path\to\run_pipeline.ps1"
+```
 
-**4. Weather drives cancellations, and winter hits hardest.** 69% of the
-92,611 cancellations were weather-related. January alone had 25,635
-cancellations, 88% of them for weather.
-
-**5. Airport performance varies by 20 points.** Among the 49 airports with
-20,000+ departures, Salt Lake City leads (83.2% on-time departures) and Dallas
-Love Field trails (63.4%). With 20,000–213,000 departures per airport, the 95%
-intervals are under ±0.6 points, so the ranking is not noise.
-
-More figures: `outputs/figures/02_on_time_heatmap.png` (carrier × month),
-`05_airports.png`, `06_cancellations.png`.
-
-**6. A ranking can reverse once airport and month are held constant (Simpson's paradox)**.
-`src/simpsons.py` compares every pair of carriers two ways: on all of their flights, and at the
-same origin airport in the same month (cells where both carriers have at least 50 flights,
-each cell weighted by the two carriers' combined flights). 8 of 78 pairs reverse. Three of them
-cover at least half of both carriers' flights, so they are the ones to trust:
-Pair	Overall difference	Same airport and month (95% interval)
-American minus Southwest	-1.9 points	+2.2 points (+1.9 to +2.4)
-Alaska minus United	+1.5 points	-0.7 points (-1.2 to -0.3)
-Alaska minus Delta	+0.6 points	-0.9 points (-1.6 to -0.1)
-American trails Southwest overall (71.8% vs 73.7%), but the flight-weighted comparison at shared
-airport-months favors American by 2.2 points. American wins only 305 of the 597 compared cells,
-so the reversal comes from large airport-months, not from American winning most places.
-The other five reversals rest on a small share of one carrier's flights and are listed in
-`outputs/tables/simpsons_paradox_pairs.csv` with a `robust` flag.
-Run it with `python src/simpsons.py` (it reads the BI extract, so it needs no database).
-![Overall vs like-for-like](outputs/figures/07_simpsons_paradox.png)
-Limits: airport and month are the only controls (time of day, route and weather are not);
-on-time performance is attributed to the origin airport; the intervals treat flights as
-independent, so they are somewhat optimistic.
-
-## How to run it
-
-1. **Get the data.** From BTS TranStats,
-   [Reporting Carrier On-Time Performance (1987–present)](https://www.transtats.bts.gov/DL_SelectFields.aspx?gnoyr_VQ=FGJ&QO_fu146_anzr=b0-gvzr),
-   download January–July 2026 with all fields, one file per month. Put the CSVs
-   (any names) in `data/raw/`. The raw files (~1.2 GB) are not committed.
-2. **Install:** `pip install -r requirements.txt` (Python 3.10+).
-3. **Run:** `python src/run_pipeline.py`. A full run takes about 3 minutes;
-   `python src/run_pipeline.py --skip-ingest` reruns validation and analysis on the
-   existing database in under a minute.
+On Linux or macOS, use cron with `python -m flightpipe run`. GitHub Actions runs the tests on
+every push (`.github/workflows/ci.yml`).
 
 ## Repository layout
 
 ```
-├── src/            config.py · ingest.py · validate.py · analyze.py · run_pipeline.py
-├── sql/            01–07 analysis queries (SQLite)
-├── reference/      atcr_table1a_ontime.csv  (published DOT figures used for validation)
-├── outputs/
-│   ├── tables/     analysis tables, validation results, BI extract
-│   ├── figures/    six charts
-│   └── data_quality_report.md
-└── data/raw/       place BTS CSVs here (git-ignored)
+├── pipeline.toml        paths, carriers, tolerance, analysis settings
+├── flightpipe/          load · quality · reference · reconcile · paradox · report · __main__ (CLI)
+├── reference/
+│   ├── atcr/            DOT Air Travel Consumer Report PDFs (April to September 2026 issues)
+│   └── manual_reference.csv   the 5 January figures typed in from the March 2026 report
+├── tests/               pytest suite on synthetic data
+├── outputs/             run_report.md, CSV tables, paradox.png, runs/*.json
+├── data/flights.db      SQLite database (git-ignored)
+└── logs/                one log file per run (git-ignored)
 ```
 
-## Data source and licence
+## Limits
 
-U.S. Department of Transportation, Bureau of Transportation Statistics, *Airline
-On-Time Performance Data*, and Office of Aviation Consumer Protection, *Air Travel
-Consumer Report* (March–September 2026 issues). U.S. government works, public
-domain.
+- **Reporting carriers only:** the data covers carriers with at least 0.5% of domestic
+  scheduled passenger revenue, not every U.S. flight.
+- **Airport and month only:** the stratified estimate controls for destination airport and month.
+  Route, time of day and origin are not controlled.
+- **Its weights are not a traveller's:** the Mantel-Haenszel weights reflect where both airlines
+  fly. For a specific traveller, weight the airport rows in `outputs/paradox_by_airport.csv` by
+  how often they actually fly to each airport.
+- **January's 5 typed-in figures** are checked against the data like the rest, but they were not
+  read from a PDF on file.
 
-## Limitations
+## Data and licence
 
-- Covers reporting carriers only (those with at least 0.5% of domestic scheduled
-  passenger revenue), so it is not every U.S. flight.
-- "Late aircraft" delay can originate from weather or air-traffic control on an
-  earlier leg, so the carrier + late-aircraft share is an upper bound on delay that
-  is strictly within the airline's control.
-- Spirit Airlines has no reported flights for June–July 2026 in the data.
+U.S. Department of Transportation: BTS *Airline On-Time Performance Data*, and the Office of
+Aviation Consumer Protection's *Air Travel Consumer Report* (April to September 2026 issues).
+Both are U.S. government works in the public domain.

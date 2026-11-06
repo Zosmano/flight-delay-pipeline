@@ -1,0 +1,184 @@
+{
+  "run_id": "20261106T054940Z",
+  "status": "success",
+  "started_utc": "2026-11-06T05:49:40+00:00",
+  "config": "pipeline.toml",
+  "load": {
+    "files": [
+      {
+        "file": "T_ONTIME_REPORTING_Apr.csv",
+        "action": "skipped"
+      },
+      {
+        "file": "T_ONTIME_REPORTING_Feb.csv",
+        "action": "skipped"
+      },
+      {
+        "file": "T_ONTIME_REPORTING_Jan.csv",
+        "action": "skipped"
+      },
+      {
+        "file": "T_ONTIME_REPORTING_Jul.csv",
+        "action": "skipped"
+      },
+      {
+        "file": "T_ONTIME_REPORTING_Jun.csv",
+        "action": "skipped"
+      },
+      {
+        "file": "T_ONTIME_REPORTING_Mar.csv",
+        "action": "skipped"
+      },
+      {
+        "file": "T_ONTIME_REPORTING_May.csv",
+        "action": "skipped"
+      }
+    ],
+    "schema_problems": []
+  },
+  "quality": [
+    {
+      "check_id": "DQ-01",
+      "description": "Every monthly file has the columns the pipeline needs",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-02",
+      "description": "Every row the manifest says was inserted is in the table",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-03",
+      "description": "Each file holds exactly one month of 2026",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-04",
+      "description": "Key fields are never blank (date, carrier, origin, destination, schedule, status)",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-05",
+      "description": "Carrier codes exist in the BTS carrier lookup",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-06",
+      "description": "Origin and destination codes exist in the BTS airport lookup",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-07",
+      "description": "Cancelled flights have a valid reason code, and other flights have none",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-08",
+      "description": "Cancelled flights have no arrival time or arrival delay",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-09",
+      "description": "Operated flights have an arrival delay",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-10",
+      "description": "The 15-minute flag agrees with the arrival delay",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-11",
+      "description": "Scheduled times are valid hhmm clock times",
+      "severity": "error",
+      "violations": 0,
+      "status": "pass"
+    },
+    {
+      "check_id": "DQ-12",
+      "description": "Delay-cause minutes add up to the arrival delay (flights 15+ min late)",
+      "severity": "warn",
+      "violations": 105,
+      "status": "warn"
+    }
+  ],
+  "reconciliation": {
+    "published": 96,
+    "matched": 96,
+    "max_abs_difference_pts": 0.0498
+  },
+  "paradox": {
+    "run_id": "20261106T054940Z",
+    "carrier_a": "SkyWest",
+    "carrier_b": "Southwest",
+    "airports": [
+      "OAK",
+      "SFO",
+      "SJC"
+    ],
+    "flights": {
+      "SkyWest": 22481,
+      "Southwest": 36727
+    },
+    "pooled_rate_pct": {
+      "SkyWest": 65.02379787376006,
+      "Southwest": 73.02529474228768
+    },
+    "crude_diff_pts": {
+      "estimate": -8.001496868527635,
+      "ci_wald": [
+        -8.772635787275172,
+        -7.230357949780099
+      ],
+      "ci_day_bootstrap": [
+        -9.585989537912097,
+        -6.4857253484808846
+      ]
+    },
+    "stratified_diff_pts": {
+      "estimate": 9.643363824857959,
+      "ci_wald": [
+        8.745987534443799,
+        10.540740115272119
+      ],
+      "ci_day_bootstrap": [
+        8.24905123820669,
+        10.9603721687951
+      ]
+    },
+    "strata_used": 21,
+    "strata_dropped": 0,
+    "strata_where_a_leads": 18,
+    "strata_where_a_leads_significantly": 15,
+    "strata_where_b_leads_significantly": 0,
+    "months_a_led_pooled": [
+      3
+    ],
+    "bootstrap": {
+      "reps": 2000,
+      "seed": 2026,
+      "cluster": "flight date"
+    },
+    "paradox": true
+  }
+}

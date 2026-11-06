@@ -1,0 +1,48 @@
+# Settings for the automated reporting pipeline. Paths are relative to this file.
+# Set FLIGHTPIPE_RAW_DIR to point at another folder of monthly files without editing this.
+
+[paths]
+raw_dir = "data/raw"              # monthly BTS CSVs (any names) and the L_*.csv lookup files
+reference_dir = "reference/atcr"  # DOT Air Travel Consumer Report PDFs
+manual_reference = "reference/manual_reference.csv"
+database = "data/flights.db"
+outputs = "outputs"
+logs = "logs"
+
+[load]
+year = 2026
+chunk_rows = 250000
+
+[reconcile]
+# DOT prints one decimal place, so a match is a difference within the rounding band.
+tolerance_pts = 0.05
+
+# BTS carrier code -> the operating-carrier name DOT prints in Table 1A.
+[carriers]
+AA = "AMERICAN AIRLINES"
+AS = "ALASKA AIRLINES"
+B6 = "JETBLUE AIRWAYS"
+DL = "DELTA AIR LINES"
+F9 = "FRONTIER AIRLINES"
+G4 = "ALLEGIANT AIR"
+MQ = "ENVOY AIR"
+NK = "SPIRIT AIRLINES"
+OH = "PSA AIRLINES"
+OO = "SKYWEST AIRLINES"
+UA = "UNITED AIRLINES"
+WN = "SOUTHWEST AIRLINES"
+YX = "REPUBLIC AIRWAYS"
+
+# Names used in reports (the ATCR names above are upper case).
+[display_names]
+OO = "SkyWest"
+WN = "Southwest"
+
+[paradox]
+# Arrivals into the San Francisco Bay Area, one airport-by-month group per stratum.
+airports = ["OAK", "SFO", "SJC"]
+carrier_a = "OO"   # SkyWest
+carrier_b = "WN"   # Southwest
+min_flights_per_carrier = 30
+bootstrap_reps = 2000
+seed = 2026
