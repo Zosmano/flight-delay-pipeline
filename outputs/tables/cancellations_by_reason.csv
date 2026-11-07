@@ -1,0 +1,29 @@
+month,reason,cancelled_flights
+1,Carrier,2246
+1,National Air System,879
+1,Security,47
+1,Weather,22463
+2,Carrier,1467
+2,National Air System,226
+2,Security,2
+2,Weather,9910
+3,Carrier,4850
+3,National Air System,2873
+3,Security,16
+3,Weather,10027
+4,Carrier,1668
+4,National Air System,699
+4,Security,2
+4,Weather,3033
+5,Carrier,1906
+5,National Air System,428
+5,Security,1
+5,Weather,3319
+6,Carrier,2124
+6,National Air System,1286
+6,Security,6
+6,Weather,6603
+7,Carrier,4511
+7,National Air System,3115
+7,Security,2
+7,Weather,8902

@@ -33,10 +33,31 @@ UA = "UNITED AIRLINES"
 WN = "SOUTHWEST AIRLINES"
 YX = "REPUBLIC AIRWAYS"
 
-# Names used in reports (the ATCR names above are upper case).
+# Short names used in the Bay Area paradox report.
 [display_names]
 OO = "SkyWest"
 WN = "Southwest"
+
+# Full names used in the insight charts and tables.
+[carrier_names]
+AA = "American Airlines"
+AS = "Alaska Airlines"
+B6 = "JetBlue Airways"
+DL = "Delta Air Lines"
+F9 = "Frontier Airlines"
+G4 = "Allegiant Air"
+MQ = "Envoy Air"
+NK = "Spirit Airlines"
+OH = "PSA Airlines"
+OO = "SkyWest Airlines"
+UA = "United Airlines"
+WN = "Southwest Airlines"
+YX = "Republic Airways"
+
+[insights]
+min_airport_departures = 20000   # set in sql/05_airport_departures.sql
+pair_min_flights = 50            # carrier-pair test: flights per carrier in an airport-month cell
+pair_min_coverage = 0.50         # share of each carrier's flights the compared cells must cover
 
 [paradox]
 # Arrivals into the San Francisco Bay Area, one airport-by-month group per stratum.

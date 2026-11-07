@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # Columns kept from the 54-column BTS export. Every monthly file must have them.
 FLIGHT_COLS = [
-    "YEAR", "MONTH", "FL_DATE", "OP_UNIQUE_CARRIER", "TAIL_NUM", "ORIGIN", "DEST",
+    "YEAR", "MONTH", "FL_DATE", "OP_UNIQUE_CARRIER", "TAIL_NUM", "ORIGIN", "ORIGIN_CITY_NAME", "ORIGIN_STATE_ABR", "DEST",
     "CRS_DEP_TIME", "DEP_TIME", "DEP_DELAY", "CRS_ARR_TIME", "ARR_TIME", "ARR_DELAY",
     "ARR_DEL15", "CANCELLED", "CANCELLATION_CODE", "DIVERTED", "DISTANCE",
     "CARRIER_DELAY", "WEATHER_DELAY", "NAS_DELAY", "SECURITY_DELAY", "LATE_AIRCRAFT_DELAY",

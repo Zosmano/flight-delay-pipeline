@@ -55,6 +55,70 @@ Two kinds of 95% interval are given:
 - **Cluster bootstrap:** resamples whole days, 2,000 times. Flights on the same day share weather
   and air-traffic delays, so this interval is wider and more honest.
 
+## Operational insights, all carriers
+
+The pipeline also answers four operational questions for all 13 carriers. These charts and
+tables are regenerated on every run, from the SQL in [`sql/`](sql/).
+
+![On-time rate by carrier](outputs/figures/01_carrier_on_time.png)
+
+**1. On-time rank and disruption risk are different things.** Alaska (79.5%) and Delta (79.0%)
+lead on on-time arrivals, and Spirit trails at 59.8%. Southwest is 7th of 13 on on-time rate
+(73.7%), but it has the second-lowest rate of 3-hour-plus delays: 78 per 10,000 operated flights,
+against 320 for PSA and 251 for American. A traveller worried about missing a connection should
+look at both measures. → [`carrier_scorecard.csv`](outputs/tables/carrier_scorecard.csv)
+
+![On-time by carrier and month](outputs/figures/02_on_time_heatmap.png)
+
+**2. Most delay minutes are attributed to the airline, not the weather.** For every carrier,
+carrier-caused plus late-arriving-aircraft minutes make up 61–81% of all delay minutes, and
+weather is under 14%. Late-arriving aircraft is the largest single cause for 10 of the 13 carriers
+(51% of Southwest's delay minutes and 52% of Frontier's). SkyWest and Delta lose the most to
+carrier-caused delays (47% and 45%).
+
+![Delay causes](outputs/figures/03_delay_causes.png)
+
+**3. Delays cascade through the day.** Flights scheduled to leave at 5 a.m. arrive on time 91.5%
+of the time; by 8 p.m. that falls to 66.3%. Most of the growth is late-arriving aircraft, 1.2
+minutes per flight at 5 a.m. against 12.5 minutes at 8 p.m., as delays from earlier legs are
+passed down the aircraft's rotation.
+
+![Delays by hour](outputs/figures/04_delay_by_hour.png)
+
+**4. Weather drives cancellations, and winter hits hardest.** 69% of the 92,611 cancellations were
+weather-related. January alone had 25,635 cancellations, 88% of them for weather.
+
+![Cancellations](outputs/figures/06_cancellations.png)
+
+**5. Airport performance varies by 20 points.** Among the 49 airports with 20,000 or more
+departures, Salt Lake City leads (83.2% on-time departures) and Dallas Love Field trails (63.4%).
+Each airport has between 20,000 and 213,000 departures, so the 95% intervals are under ±0.6
+points and the ranking is not noise.
+
+![Airports](outputs/figures/05_airports.png)
+
+**6. Carrier rankings can also reverse.** The same Simpson's-paradox test, applied to every pair of
+carriers at the same origin airport and month, finds 8 of 78 pairs reversing. Only 3 cover at least
+half of both carriers' flights, so those are the ones to trust:
+
+| Pair | Overall difference | Same airport and month (95% CI) |
+|---|---:|---:|
+| American minus Southwest | −1.9 points | +2.2 points (+1.9 to +2.4) |
+| Alaska minus United | +1.5 points | −0.7 points (−1.2 to −0.3) |
+| Alaska minus Delta | +0.6 points | −0.9 points (−1.6 to −0.1) |
+
+American trails Southwest overall (71.8% vs 73.7%), but the flight-weighted comparison at shared
+airport-months favours American by 2.2 points. American wins only 305 of the 597 compared cells,
+so the reversal comes from large airport-months, not from American winning most places. For
+this test, cells need at least 50 flights per carrier, and each cell is weighted by the two
+carriers' combined flights. → [`simpsons_paradox_pairs.csv`](outputs/tables/simpsons_paradox_pairs.csv)
+
+![Overall vs like-for-like](outputs/figures/07_simpsons_paradox.png)
+
+[`bi_extract_month_carrier_airport.csv`](outputs/tables/bi_extract_month_carrier_airport.csv) has
+one row per month, carrier and origin airport (10,179 rows), ready for a Tableau or Power BI
+dashboard.
+
 ## What the pipeline does
 
 ```
@@ -72,6 +136,7 @@ monthly BTS CSVs ─► load ─────────────► check �
 | Check | `flightpipe/quality.py` | 12 checks (below). Results go in the `dq_results` table on every run. |
 | Reconcile | `flightpipe/reference.py`, `reconcile.py` | Extracts DOT's published rates from the Air Travel Consumer Report PDFs, recomputes each one from the flights, and records the difference. |
 | Analyze | `flightpipe/paradox.py` | Builds the Bay Area summary table, the 21 strata, the stratified estimate with both intervals, and the chart. |
+| Insights | `flightpipe/insights.py`, `sql/*.sql` | Runs the SQL queries for the six operational charts and the carrier-pair test, and writes `outputs/figures/` and `outputs/tables/`. |
 | Report | `flightpipe/report.py` | Writes `outputs/run_report.md` and a JSON record of the run. |
 
 ### The 12 checks
@@ -131,7 +196,7 @@ This is why SkyWest's Bay Area count is 22,481 flights and Southwest's is 36,727
 | `python -m flightpipe check` | Load new files and run the checks only |
 | `python -m flightpipe run --full-refresh` | Rebuild the database from scratch |
 | `python -m flightpipe run --strict` | Also stop the run if a check flags rows |
-| `python -m pytest` | Run the 9 tests, which use synthetic data and need no download |
+| `python -m pytest` | Run the 10 tests, which use synthetic data and need no download |
 
 **Exit codes:** `0` success, `2` a data-quality check failed, `3` a published figure was not
 reproduced, `1` any other error.
@@ -149,12 +214,15 @@ every push (`.github/workflows/ci.yml`).
 
 ```
 ├── pipeline.toml        paths, carriers, tolerance, analysis settings
-├── flightpipe/          load · quality · reference · reconcile · paradox · report · __main__ (CLI)
+├── flightpipe/          load · quality · reference · reconcile · paradox · insights · report · __main__ (CLI)
+├── sql/                 views and the seven insight queries (SQLite)
 ├── reference/
 │   ├── atcr/            DOT Air Travel Consumer Report PDFs (April to September 2026 issues)
 │   └── manual_reference.csv   the 5 January figures typed in from the March 2026 report
 ├── tests/               pytest suite on synthetic data
-├── outputs/             run_report.md, CSV tables, paradox.png, runs/*.json
+├── outputs/             run_report.md, Bay Area tables, paradox.png, runs/*.json
+│   ├── figures/         the seven operational charts (01-07)
+│   └── tables/          their tables and the BI extract
 ├── data/flights.db      SQLite database (git-ignored)
 └── logs/                one log file per run (git-ignored)
 ```
@@ -170,6 +238,12 @@ every push (`.github/workflows/ci.yml`).
   how often they actually fly to each airport.
 - **January's 5 typed-in figures** are checked against the data like the rest, but they were not
   read from a PDF on file.
+- **Late aircraft is not always the airline's fault:** a late-arriving aircraft can have been
+  delayed by weather or air-traffic control on an earlier leg. Carrier plus late aircraft is
+  therefore an upper bound on delay within an airline's control.
+- **The carrier-pair test** credits each flight to its origin airport, controls only for airport
+  and month, and treats flights as independent, so its intervals are somewhat optimistic.
+- **Spirit Airlines** has no reported flights for June and July 2026.
 
 ## Data and licence
 

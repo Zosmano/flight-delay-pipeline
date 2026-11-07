@@ -14,7 +14,7 @@ COLS = config.FLIGHT_COLS
 def flight(month=1, day=1, carrier="WN", dest="OAK", arr_delay=0.0, cancelled=0, diverted=0, code=None, **kw):
     late = arr_delay is not None and arr_delay >= 15
     row = {"YEAR": 2026, "MONTH": month, "FL_DATE": f"{month}/{day}/2026 12:00:00 AM", "OP_UNIQUE_CARRIER": carrier,
-           "TAIL_NUM": "N1", "ORIGIN": "LAX", "DEST": dest, "CRS_DEP_TIME": 900, "DEP_TIME": 900,
+           "TAIL_NUM": "N1", "ORIGIN": "LAX", "ORIGIN_CITY_NAME": "Los Angeles, CA", "ORIGIN_STATE_ABR": "CA", "DEST": dest, "CRS_DEP_TIME": 900, "DEP_TIME": 900,
            "DEP_DELAY": 0, "CRS_ARR_TIME": 1100, "ARR_TIME": None if cancelled else 1100,
            "ARR_DELAY": None if cancelled or diverted else arr_delay,
            "ARR_DEL15": None if cancelled or diverted else float(late),
@@ -29,6 +29,9 @@ def flight(month=1, day=1, carrier="WN", dest="OAK", arr_delay=0.0, cancelled=0,
 
 
 def write_month(folder, rows, name="T_ONTIME_REPORTING_Jan.csv"):
+    import tempfile
+    # Never write test data outside the system temp folder (protects the real monthly files).
+    assert Path(folder).resolve().is_relative_to(Path(tempfile.gettempdir()).resolve()), folder
     pd.DataFrame(rows, columns=COLS).to_csv(Path(folder) / name, index=False)
 
 

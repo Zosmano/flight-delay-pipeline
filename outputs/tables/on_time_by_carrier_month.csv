@@ -1,0 +1,90 @@
+carrier_name,month,scheduled_flights,on_time_flights,on_time_pct,cancelled_pct
+Alaska Airlines,1,26436,20370,77.05,2.02
+Alaska Airlines,2,24013,19621,81.71,1.18
+Alaska Airlines,3,27793,21220,76.35,1.87
+Alaska Airlines,4,27222,22778,83.67,0.43
+Alaska Airlines,5,29184,24051,82.41,0.73
+Alaska Airlines,6,29891,23914,80.0,0.66
+Alaska Airlines,7,31682,24053,75.92,0.81
+Allegiant Air,1,8963,6620,73.86,2.43
+Allegiant Air,2,9087,7019,77.24,0.68
+Allegiant Air,3,12522,8871,70.84,1.59
+Allegiant Air,4,10318,7799,75.59,0.14
+Allegiant Air,5,10569,7683,72.69,0.14
+Allegiant Air,6,12663,8634,68.18,0.54
+Allegiant Air,7,13314,9127,68.55,0.55
+American Airlines,1,76772,53023,69.07,8.93
+American Airlines,2,72786,56047,77.0,2.14
+American Airlines,3,84647,61647,72.83,2.04
+American Airlines,4,84538,64942,76.82,0.89
+American Airlines,5,88740,66622,75.08,1.49
+American Airlines,6,86464,58504,67.66,2.64
+American Airlines,7,89200,57964,64.98,2.29
+Delta Air Lines,1,79198,60939,76.95,3.94
+Delta Air Lines,2,74200,60397,81.4,2.09
+Delta Air Lines,3,86890,66730,76.8,3.56
+Delta Air Lines,4,87115,73271,84.11,0.84
+Delta Air Lines,5,91955,74476,80.99,1.24
+Delta Air Lines,6,90247,73203,81.11,1.12
+Delta Air Lines,7,94140,67649,71.86,2.4
+Envoy Air,1,24155,18295,75.74,4.89
+Envoy Air,2,22728,18767,82.57,0.79
+Envoy Air,3,26721,20660,77.32,3.05
+Envoy Air,4,27127,21546,79.43,2.05
+Envoy Air,5,28806,23452,81.41,1.79
+Envoy Air,6,29207,22126,75.76,3.4
+Envoy Air,7,29780,23773,79.83,1.48
+Frontier Airlines,1,15382,10672,69.38,3.56
+Frontier Airlines,2,15056,11627,77.23,1.42
+Frontier Airlines,3,20119,13644,67.82,3.2
+Frontier Airlines,4,18540,13561,73.14,1.32
+Frontier Airlines,5,18423,14021,76.11,0.52
+Frontier Airlines,6,19104,13309,69.67,2.0
+Frontier Airlines,7,20482,12804,62.51,3.4
+JetBlue Airways,1,18109,11536,63.7,6.63
+JetBlue Airways,2,17871,11142,62.35,7.71
+JetBlue Airways,3,21340,14578,68.31,2.02
+JetBlue Airways,4,20650,15607,75.58,0.1
+JetBlue Airways,5,19806,16044,81.01,0.21
+JetBlue Airways,6,20804,15311,73.6,1.52
+JetBlue Airways,7,23312,12994,55.74,9.78
+PSA Airlines,1,19550,13061,66.81,11.6
+PSA Airlines,2,17664,12248,69.34,4.81
+PSA Airlines,3,20938,13739,65.62,7.44
+PSA Airlines,4,20547,15550,75.68,1.26
+PSA Airlines,5,20854,15631,74.95,1.93
+PSA Airlines,6,20871,14005,67.1,6.89
+PSA Airlines,7,21472,12687,59.09,6.6
+Republic Airways,1,29572,21574,72.95,8.18
+Republic Airways,2,27458,20377,74.21,6.9
+Republic Airways,3,31734,21735,68.49,5.81
+Republic Airways,4,31013,25038,80.73,1.07
+Republic Airways,5,32203,26737,83.03,1.38
+Republic Airways,6,30929,24194,78.22,3.57
+Republic Airways,7,32082,21832,68.05,9.33
+SkyWest Airlines,1,66168,48996,74.05,3.31
+SkyWest Airlines,2,62073,47822,77.04,1.18
+SkyWest Airlines,3,73391,54887,74.79,3.58
+SkyWest Airlines,4,73115,57137,78.15,1.83
+SkyWest Airlines,5,75994,60219,79.24,0.85
+SkyWest Airlines,6,73673,56132,76.19,1.4
+SkyWest Airlines,7,77072,57498,74.6,1.55
+Southwest Airlines,1,104002,85711,82.41,2.62
+Southwest Airlines,2,100783,81389,80.76,1.01
+Southwest Airlines,3,122298,89310,73.03,1.56
+Southwest Airlines,4,117814,91072,77.3,0.26
+Southwest Airlines,5,120646,86726,71.88,0.39
+Southwest Airlines,6,120933,79005,65.33,0.62
+Southwest Airlines,7,124994,85002,68.0,1.14
+Spirit Airlines,1,11915,7940,66.64,7.19
+Spirit Airlines,2,11512,7228,62.79,8.0
+Spirit Airlines,3,12952,6272,48.42,10.38
+Spirit Airlines,4,10469,6598,63.02,3.36
+Spirit Airlines,5,354,208,58.76,14.12
+United Airlines,1,63781,51010,79.98,2.38
+United Airlines,2,59806,49461,82.7,1.61
+United Airlines,3,70757,54932,77.63,1.49
+United Airlines,4,69451,56890,81.91,0.54
+United Airlines,5,74200,58965,79.47,0.39
+United Airlines,6,72791,53821,73.94,0.62
+United Airlines,7,74440,53194,71.46,1.95

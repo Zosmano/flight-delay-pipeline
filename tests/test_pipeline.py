@@ -15,6 +15,13 @@ def count(cfg, sql="SELECT COUNT(*) FROM flights"):
         return con.execute(sql).fetchone()[0]
 
 
+def test_tests_ignore_the_real_data_folder(workspace, monkeypatch):
+    from flightpipe import config
+    monkeypatch.setenv("FLIGHTPIPE_RAW_DIR", "C:/some/real/data")
+    with pytest.raises(AssertionError):
+        write_month(config.load(workspace / "pipeline.toml")["paths"]["raw_dir"], [flight()])
+
+
 def test_dot_on_time_definition_keeps_cancelled_and_diverted_in_denominator():
     rows = pd.DataFrame([flight(arr_delay=14), flight(arr_delay=15), flight(cancelled=1, code="B"),
                          flight(diverted=1)])

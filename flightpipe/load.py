@@ -19,7 +19,7 @@ log = logging.getLogger("flightpipe.load")
 
 DDL = f"""
 CREATE TABLE IF NOT EXISTS flights (
-    {", ".join(c + " NUMERIC" if c not in ("FL_DATE", "OP_UNIQUE_CARRIER", "TAIL_NUM", "ORIGIN", "DEST", "CANCELLATION_CODE") else c + " TEXT" for c in FLIGHT_COLS)},
+    {", ".join(c + " NUMERIC" if c not in ("FL_DATE", "OP_UNIQUE_CARRIER", "TAIL_NUM", "ORIGIN", "ORIGIN_CITY_NAME", "ORIGIN_STATE_ABR", "DEST", "CANCELLATION_CODE") else c + " TEXT" for c in FLIGHT_COLS)},
     OPERATED INTEGER NOT NULL,   -- neither cancelled nor diverted
     ON_TIME INTEGER NOT NULL,    -- DOT definition: operated and arrived < 15 min late
     ROW_HASH INTEGER NOT NULL,
@@ -103,6 +103,14 @@ def run(cfg, full_refresh=False):
         db.unlink()
         log.info("full refresh: deleted %s", db.name)
     con = sqlite3.connect(db)
+    have = [r[1] for r in con.execute("PRAGMA table_info(flights)")]
+    if have and not set(INSERT_COLS) <= set(have):
+        # the pipeline now keeps more columns than this database holds: rebuild it once
+        con.close()
+        db.unlink()
+        log.warning("database schema is out of date (missing %s): rebuilding from the source files",
+                    ", ".join(sorted(set(INSERT_COLS) - set(have))))
+        con = sqlite3.connect(db)
     con.executescript(DDL)
     load_lookups(con, raw)
     files, problems = discover(raw)

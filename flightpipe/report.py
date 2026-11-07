@@ -10,7 +10,7 @@ def fmt_ci(ci):
     return f"{ci[0]:+.1f} to {ci[1]:+.1f}"
 
 
-def write(cfg, run_id, started, load_result, dq, rec, par, status):
+def write(cfg, run_id, started, load_result, dq, rec, par, status, ins=None):
     out = cfg["paths"]["outputs"]
     out.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(cfg["paths"]["database"])
@@ -87,6 +87,20 @@ def write(cfg, run_id, started, load_result, dq, rec, par, status):
         L += ["", "![Pooled vs stratified](paradox.png)", "",
               "Strata are destination airport by month; the stratified estimate uses Mantel-Haenszel weights. "
               "On time follows DOT: cancelled and diverted flights count as late and stay in the denominator."]
+    if ins is not None and len(ins["scorecard"]) >= 2:
+        sc = ins["scorecard"].sort_values("on_time_pct", ascending=False)
+        pr = ins["pairs"]
+        L += ["", "## 5. Operational insights", "",
+              f"On-time leaders: {sc.iloc[0].carrier_name} {sc.iloc[0].on_time_pct:.1f}%, {sc.iloc[1].carrier_name} "
+              f"{sc.iloc[1].on_time_pct:.1f}%; lowest: {sc.iloc[-1].carrier_name} {sc.iloc[-1].on_time_pct:.1f}%. "
+              f"Carrier-pair test at the same origin airport and month: {int(pr.reversal.sum())} of {len(pr)} pairs reverse, "
+              f"{int(pr.robust.sum())} of them covering at least half of both carriers' flights.", "",
+              "| Figure | Table |", "|---|---|"]
+        for fig, tab in [("01_carrier_on_time.png", "carrier_scorecard.csv"), ("02_on_time_heatmap.png", "on_time_by_carrier_month.csv"),
+                         ("03_delay_causes.png", "delay_cause_shares.csv"), ("04_delay_by_hour.png", "delay_by_departure_hour.csv"),
+                         ("05_airports.png", "airport_departure_performance.csv"), ("06_cancellations.png", "cancellations_by_reason.csv"),
+                         ("07_simpsons_paradox.png", "simpsons_paradox_pairs.csv")]:
+            L.append(f"| [`{fig}`](figures/{fig}) | [`{tab}`](tables/{tab}) |")
     L += ["", "## Outputs", "", "- `bay_area_carrier_summary.csv`, `paradox_strata.csv`, `paradox_by_airport.csv`, "
           "`paradox_summary.json`, `paradox.png`", "- `reconciliation_vs_dot.csv`, `dq_exceptions.csv`", "- `runs/<run id>.json`: this run's record"]
     (out / "run_report.md").write_text("\n".join(L) + "\n", encoding="utf-8")

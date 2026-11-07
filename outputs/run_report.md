@@ -1,6 +1,6 @@
-# Run report: 20261106T061047Z
+# Run report: 20261107T190137Z
 
-Status: **success**. Started 2026-11-06 06:10 UTC, 46 seconds.
+Status: **success**. Started 2026-11-07 19:01 UTC, 226 seconds.
 
 ## 1. Load
 
@@ -8,13 +8,13 @@ Status: **success**. Started 2026-11-06 06:10 UTC, 46 seconds.
 
 | File | Period | Rows inserted | Duplicates skipped | This run |
 |---|---|---:|---:|---|
-| T_ONTIME_REPORTING_Jan.csv | 2026-01 | 544,003 | 0 | skipped |
-| T_ONTIME_REPORTING_Feb.csv | 2026-02 | 515,037 | 0 | skipped |
-| T_ONTIME_REPORTING_Mar.csv | 2026-03 | 612,102 | 0 | skipped |
-| T_ONTIME_REPORTING_Apr.csv | 2026-04 | 597,919 | 0 | skipped |
-| T_ONTIME_REPORTING_May.csv | 2026-05 | 611,734 | 1 | skipped |
-| T_ONTIME_REPORTING_Jun.csv | 2026-06 | 607,577 | 0 | skipped |
-| T_ONTIME_REPORTING_Jul.csv | 2026-07 | 631,970 | 0 | skipped |
+| T_ONTIME_REPORTING_Jan.csv | 2026-01 | 544,003 | 0 | loaded |
+| T_ONTIME_REPORTING_Feb.csv | 2026-02 | 515,037 | 0 | loaded |
+| T_ONTIME_REPORTING_Mar.csv | 2026-03 | 612,102 | 0 | loaded |
+| T_ONTIME_REPORTING_Apr.csv | 2026-04 | 597,919 | 0 | loaded |
+| T_ONTIME_REPORTING_May.csv | 2026-05 | 611,734 | 1 | loaded |
+| T_ONTIME_REPORTING_Jun.csv | 2026-06 | 607,577 | 0 | loaded |
+| T_ONTIME_REPORTING_Jul.csv | 2026-07 | 631,970 | 0 | loaded |
 
 ## 2. Data-quality checks
 
@@ -73,6 +73,20 @@ Why the pooled figure reverses:
 ![Pooled vs stratified](paradox.png)
 
 Strata are destination airport by month; the stratified estimate uses Mantel-Haenszel weights. On time follows DOT: cancelled and diverted flights count as late and stay in the denominator.
+
+## 5. Operational insights
+
+On-time leaders: Alaska Airlines 79.5%, Delta Air Lines 79.0%; lowest: Spirit Airlines 59.8%. Carrier-pair test at the same origin airport and month: 8 of 78 pairs reverse, 3 of them covering at least half of both carriers' flights.
+
+| Figure | Table |
+|---|---|
+| [`01_carrier_on_time.png`](figures/01_carrier_on_time.png) | [`carrier_scorecard.csv`](tables/carrier_scorecard.csv) |
+| [`02_on_time_heatmap.png`](figures/02_on_time_heatmap.png) | [`on_time_by_carrier_month.csv`](tables/on_time_by_carrier_month.csv) |
+| [`03_delay_causes.png`](figures/03_delay_causes.png) | [`delay_cause_shares.csv`](tables/delay_cause_shares.csv) |
+| [`04_delay_by_hour.png`](figures/04_delay_by_hour.png) | [`delay_by_departure_hour.csv`](tables/delay_by_departure_hour.csv) |
+| [`05_airports.png`](figures/05_airports.png) | [`airport_departure_performance.csv`](tables/airport_departure_performance.csv) |
+| [`06_cancellations.png`](figures/06_cancellations.png) | [`cancellations_by_reason.csv`](tables/cancellations_by_reason.csv) |
+| [`07_simpsons_paradox.png`](figures/07_simpsons_paradox.png) | [`simpsons_paradox_pairs.csv`](tables/simpsons_paradox_pairs.csv) |
 
 ## Outputs
 

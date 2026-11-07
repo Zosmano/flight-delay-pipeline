@@ -8,7 +8,7 @@ import logging
 import sys
 from datetime import datetime, timezone
 
-from . import config, load, paradox, quality, reconcile, report
+from . import config, insights, load, paradox, quality, reconcile, report
 
 
 def setup_logging(cfg, run_id, verbose):
@@ -26,7 +26,7 @@ def setup_logging(cfg, run_id, verbose):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="flightpipe", description=__doc__.splitlines()[0])
     ap.add_argument("stage", nargs="?", default="run", choices=["run", "load", "check", "reconcile", "analyze"],
-                    help="run = every stage; the others stop after that stage")
+                    help="run = every stage; the others stop after that stage (analyze = paradox and insights)")
     ap.add_argument("--config", help="path to pipeline.toml")
     ap.add_argument("--full-refresh", action="store_true", help="rebuild the database from scratch")
     ap.add_argument("--strict", action="store_true", help="also stop the run if a flag check finds rows")
@@ -40,7 +40,7 @@ def main(argv=None):
     log.info("run %s, config %s, raw files in %s", run_id, cfg["config_file"].name, cfg["paths"]["raw_dir"])
     stages = ["load", "check", "reconcile", "analyze"]
     upto = stages.index(args.stage) if args.stage != "run" else len(stages) - 1
-    rec = par = None
+    rec = par = ins = None
     code = 0
     try:
         load_result = load.run(cfg, full_refresh=args.full_refresh)
@@ -55,8 +55,9 @@ def main(argv=None):
                 code = 3
         if code == 0 and upto >= 3:
             par = paradox.run(cfg, run_id)
+            ins = insights.run(cfg, run_id)
         status = {0: "success", 2: "failed data-quality checks", 3: "did not reproduce published figures"}[code]
-        report.write(cfg, run_id, started, load_result, dq, rec, par, status)
+        report.write(cfg, run_id, started, load_result, dq, rec, par, status, ins)
         log.info("report: %s", cfg["paths"]["outputs"] / "run_report.md")
     except Exception:
         log.exception("run %s crashed", run_id)
