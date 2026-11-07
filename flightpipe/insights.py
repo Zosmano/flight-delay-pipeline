@@ -90,6 +90,11 @@ class Insights:
         t.to_csv(self.tables / "on_time_by_carrier_month.csv", index=False)
         m = t.pivot(index="carrier_name", columns="month", values="on_time_pct")
         m = m.loc[m.mean(axis=1).sort_values(ascending=False).index]
+        # A carrier-month covering under half the month's days (e.g. an airline that stopped
+        # flying) is marked with * so it isn't read as a full month.
+        days_in_month = t.groupby("month").days_with_flights.transform("max")
+        part = t[t.days_with_flights < 0.5 * days_in_month]
+        partial = {(r.carrier_name, r.month) for r in part.itertuples()}
         fig, ax = plt.subplots(figsize=(7.5, 5.2))
         im = ax.imshow(m.values, cmap=LinearSegmentedColormap.from_list("blues", SEQ_BLUES), aspect="auto", vmin=50, vmax=90)
         ax.set_xticks(range(m.shape[1]), [MONTHS[c] for c in m.columns])
@@ -98,14 +103,24 @@ class Insights:
             for j in range(m.shape[1]):
                 v = m.values[i, j]
                 if not math.isnan(v):
-                    ax.text(j, i, f"{v:.0f}", ha="center", va="center", fontsize=8, color="white" if v >= 74 else INK)
+                    star = "*" if (m.index[i], m.columns[j]) in partial else ""
+                    ax.text(j, i, f"{v:.0f}{star}", ha="center", va="center", fontsize=8,
+                            color="white" if v >= 74 else INK)
         for s in ax.spines.values():
             s.set_visible(False)
         ax.tick_params(length=0)
         cb = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
         cb.outline.set_visible(False)
         cb.set_label("On-time %", color=INK_2)
-        ax.set_title("On-time % by carrier and month (blank = not reported)", loc="left")
+        ax.set_title("On-time % by carrier and month (blank = no flights operated)", loc="left")
+        if len(part):
+            def span(r):
+                d0, d1 = pd.Timestamp(r.first_date), pd.Timestamp(r.last_date)
+                return f"{d0:%b} {d0.day}" + ("" if d0 == d1 else f" to {d1.day}")
+            notes = "; ".join(f"{r.carrier_name}, flights on {span(r)} only "
+                              f"({r.days_with_flights} day{'s' if r.days_with_flights > 1 else ''}, "
+                              f"{r.scheduled_flights:,} flights)" for r in part.itertuples())
+            fig.text(0.125, 0.015, f"* Part month: {notes}.", fontsize=7.5, color=INK_2, ha="left")
         self.save(fig, "02_on_time_heatmap.png")
         return t
 

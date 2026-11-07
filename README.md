@@ -243,7 +243,9 @@ every push (`.github/workflows/ci.yml`).
   therefore an upper bound on delay within an airline's control.
 - **The carrier-pair test** credits each flight to its origin airport, controls only for airport
   and month, and treats flights as independent, so its intervals are somewhat optimistic.
-- **Spirit Airlines** has no reported flights for June and July 2026.
+- **Spirit Airlines** stopped flying on May 2, 2026, when it ceased operations, so it has no
+  flights in June or July. Its May figure covers May 1 only (354 flights), and the heatmap marks
+  that square with an asterisk.
 
 ## Data and licence
 

@@ -1,51 +1,37 @@
 {
-  "run_id": "20261107T190137Z",
+  "run_id": "20261107T191628Z",
   "status": "success",
-  "started_utc": "2026-11-07T19:01:37+00:00",
+  "started_utc": "2026-11-07T19:16:28+00:00",
   "config": "pipeline.toml",
   "load": {
     "files": [
       {
         "file": "T_ONTIME_REPORTING_Apr.csv",
-        "action": "loaded",
-        "rows": 597919,
-        "duplicates": 0
+        "action": "skipped"
       },
       {
         "file": "T_ONTIME_REPORTING_Feb.csv",
-        "action": "loaded",
-        "rows": 515037,
-        "duplicates": 0
+        "action": "skipped"
       },
       {
         "file": "T_ONTIME_REPORTING_Jan.csv",
-        "action": "loaded",
-        "rows": 544003,
-        "duplicates": 0
+        "action": "skipped"
       },
       {
         "file": "T_ONTIME_REPORTING_Jul.csv",
-        "action": "loaded",
-        "rows": 631970,
-        "duplicates": 0
+        "action": "skipped"
       },
       {
         "file": "T_ONTIME_REPORTING_Jun.csv",
-        "action": "loaded",
-        "rows": 607577,
-        "duplicates": 0
+        "action": "skipped"
       },
       {
         "file": "T_ONTIME_REPORTING_Mar.csv",
-        "action": "loaded",
-        "rows": 612102,
-        "duplicates": 0
+        "action": "skipped"
       },
       {
         "file": "T_ONTIME_REPORTING_May.csv",
-        "action": "loaded",
-        "rows": 611734,
-        "duplicates": 1
+        "action": "skipped"
       }
     ],
     "schema_problems": []
@@ -142,7 +128,7 @@
     "max_abs_difference_pts": 0.0498
   },
   "paradox": {
-    "run_id": "20261107T190137Z",
+    "run_id": "20261107T191628Z",
     "carrier_a": "SkyWest",
     "carrier_b": "Southwest",
     "airports": [

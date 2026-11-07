@@ -1,6 +1,6 @@
-# Run report: 20261107T190137Z
+# Run report: 20261107T191628Z
 
-Status: **success**. Started 2026-11-07 19:01 UTC, 226 seconds.
+Status: **success**. Started 2026-11-07 19:16 UTC, 93 seconds.
 
 ## 1. Load
 
@@ -8,13 +8,13 @@ Status: **success**. Started 2026-11-07 19:01 UTC, 226 seconds.
 
 | File | Period | Rows inserted | Duplicates skipped | This run |
 |---|---|---:|---:|---|
-| T_ONTIME_REPORTING_Jan.csv | 2026-01 | 544,003 | 0 | loaded |
-| T_ONTIME_REPORTING_Feb.csv | 2026-02 | 515,037 | 0 | loaded |
-| T_ONTIME_REPORTING_Mar.csv | 2026-03 | 612,102 | 0 | loaded |
-| T_ONTIME_REPORTING_Apr.csv | 2026-04 | 597,919 | 0 | loaded |
-| T_ONTIME_REPORTING_May.csv | 2026-05 | 611,734 | 1 | loaded |
-| T_ONTIME_REPORTING_Jun.csv | 2026-06 | 607,577 | 0 | loaded |
-| T_ONTIME_REPORTING_Jul.csv | 2026-07 | 631,970 | 0 | loaded |
+| T_ONTIME_REPORTING_Jan.csv | 2026-01 | 544,003 | 0 | skipped |
+| T_ONTIME_REPORTING_Feb.csv | 2026-02 | 515,037 | 0 | skipped |
+| T_ONTIME_REPORTING_Mar.csv | 2026-03 | 612,102 | 0 | skipped |
+| T_ONTIME_REPORTING_Apr.csv | 2026-04 | 597,919 | 0 | skipped |
+| T_ONTIME_REPORTING_May.csv | 2026-05 | 611,734 | 1 | skipped |
+| T_ONTIME_REPORTING_Jun.csv | 2026-06 | 607,577 | 0 | skipped |
+| T_ONTIME_REPORTING_Jul.csv | 2026-07 | 631,970 | 0 | skipped |
 
 ## 2. Data-quality checks
 

@@ -5,7 +5,10 @@ SELECT c.carrier_name,
        COUNT(*)                                      AS scheduled_flights,
        SUM(f.ON_TIME)                                AS on_time_flights,
        ROUND(100.0 * SUM(f.ON_TIME) / COUNT(*), 2)   AS on_time_pct,
-       ROUND(100.0 * SUM(f.CANCELLED) / COUNT(*), 2) AS cancelled_pct
+       ROUND(100.0 * SUM(f.CANCELLED) / COUNT(*), 2) AS cancelled_pct,
+       COUNT(DISTINCT f.FL_DATE)                     AS days_with_flights,
+       MIN(f.FL_DATE)                                AS first_date,
+       MAX(f.FL_DATE)                                AS last_date
 FROM flights_v f
 JOIN carriers c ON c.code = f.OP_UNIQUE_CARRIER
 GROUP BY c.carrier_name, f.MONTH
